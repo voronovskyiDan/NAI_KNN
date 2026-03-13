@@ -4,6 +4,10 @@ public class KNearestNeighbours {
     private int k;
     private ArrayList<Observation> trainDataset;
 
+    public KNearestNeighbours() {
+        k = 0;
+        trainDataset = new ArrayList<>();
+    }
 //    private ArrayList<Observation> sortDistances(Observation observation) {
 //        PriorityQueue<ObservationPair> distances
 //                = new PriorityQueue<>(this.trainDataset.size());
@@ -24,15 +28,14 @@ public class KNearestNeighbours {
 //    }
     private ArrayList<ObservationPair> sortDistances(Observation observation) {
         ArrayList<ObservationPair> distances = new ArrayList<>(this.trainDataset.size());
-        for(int i = 0; i < this.trainDataset.size(); i++) {
+        for (Observation value : this.trainDataset) {
             distances.add(
                     new ObservationPair(
-                            observation.calculateEuclideanDistance(this.trainDataset.get(i)),
-                            this.trainDataset.get(i)
+                            observation.calculateEuclideanDistance(value),
+                            value
                     )
             );
         }
-        ArrayList<ObservationPair> result = new ArrayList<>();
         for(int i = 1; i < distances.size(); i++) {
             ObservationPair key = distances.get(i);
             int j = i - 1;
@@ -44,7 +47,7 @@ public class KNearestNeighbours {
             distances.set(j+1, key);
         }
 
-        return result;
+        return distances;
     }
     private String findPredictedClass(ArrayList<ObservationPair> sortedDistances) {
         if(sortedDistances.size() < k)
@@ -55,9 +58,9 @@ public class KNearestNeighbours {
 
         for(int i = 0; i < k; i++) {
             String type = sortedDistances.get(i).getValue().getObservationType();
-            int count = mode.getOrDefault(type, 0);
+            int count = mode.getOrDefault(type, 0) + 1;
 
-            mode.put(type, count+1);
+            mode.put(type, count);
             maxCount = Math.max(maxCount, count);
         }
 
@@ -70,14 +73,18 @@ public class KNearestNeighbours {
 
         return mostFrequents.get(new Random().nextInt(mostFrequents.size()));
     }
-    public String predict(Observation observation) {
+    public String predict(Observation observation) throws Exception {
+        if(trainDataset.isEmpty())
+            throw new Exception("No train dataset found\nEvaluate file first");
+        if(trainDataset.size() < k)
+            throw new Exception("Value K is too big");
+        if(k == 0)
+            throw new Exception("Value of K is not set");
+
         ArrayList<ObservationPair> sortedDistances = sortDistances(observation);
         return findPredictedClass(sortedDistances);
     }
 
-    public int getK() {
-        return k;
-    }
     public void setK(int k) {
         this.k = k;
     }

@@ -1,12 +1,15 @@
 import java.util.ArrayList;
 
 public class Observation {
-    private ArrayList<Double> attributes;
-    private String observationType;
+    private final ArrayList<Double> attributes;
+    private final String observationType;
 
     public Observation(ArrayList<Double> attributes, String observationType) {
         this.attributes = attributes;
         this.observationType = observationType;
+    }
+    public Observation(ArrayList<Double> attributes) {
+        this(attributes, "observationType");
     }
 
     public double calculateEuclideanDistance(Observation observation) {
@@ -22,9 +25,6 @@ public class Observation {
 
     public ArrayList<Double> getAttributes() {
         return attributes;
-    }
-    public void setAttributes(ArrayList<Double> attributes) {
-        this.attributes = attributes;
     }
     public String getObservationType() {
         return observationType;
