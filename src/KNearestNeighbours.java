@@ -36,15 +36,16 @@ public class KNearestNeighbours {
                     )
             );
         }
-        for(int i = 1; i < distances.size(); i++) {
-            ObservationPair key = distances.get(i);
-            int j = i - 1;
 
-            while (j >= 0 && distances.get(j).compareTo(key) > 0) {
-                distances.set(j+1, distances.get(j));
-                j = j - 1;
+        for(int next = 1; next < distances.size(); next++) {
+            int curr = next;
+            ObservationPair tmp = distances.get(curr);
+
+            while ((curr > 0) && tmp.getPriority() < distances.get(curr - 1).getPriority()) {
+                distances.set(curr, distances.get(curr - 1));
+                curr--;
             }
-            distances.set(j+1, key);
+            distances.set(curr, tmp);
         }
 
         return distances;
